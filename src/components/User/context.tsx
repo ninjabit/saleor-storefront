@@ -1,5 +1,6 @@
 import { ApolloError } from "apollo-client";
 import * as React from "react";
+import { TokenAuth } from "./types/TokenAuth";
 
 interface UserInterface {
   email: string;
@@ -12,7 +13,7 @@ export interface UserContextInterface {
   user: UserInterface | null;
   authenticate(token: string): void;
   logout(): void;
-  login(email: string, password: string): void;
+  login(data: TokenAuth): void;
 }
 
 /* tslint:disable:no-empty */
@@ -20,7 +21,7 @@ export const UserContext = React.createContext<UserContextInterface>({
   authenticate: token => {},
   errors: null,
   loading: false,
-  login: (email, password) => {},
+  login: data => {},
   logout: () => {},
   token: null,
   user: null

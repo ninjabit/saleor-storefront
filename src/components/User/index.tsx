@@ -3,7 +3,8 @@ import * as React from "react";
 
 import { getAuthToken, removeAuthToken, setAuthToken } from "../../core/auth";
 import { UserContext, UserContextInterface } from "./context";
-import { TOKEN_AUTH_MUTATION, TOKEN_VERIFICATION_MUTATION } from "./queries";
+import { tokenAuthMutation, tokenVeryficationMutation } from "./queries";
+import { TokenAuth } from "./types/TokenAuth";
 
 export default class UserProvider extends React.Component<
   {
@@ -40,30 +41,14 @@ export default class UserProvider extends React.Component<
     }
   };
 
-  login = async (email, password) => {
-    const { apolloClient } = this.props;
-    this.setState({ loading: true });
-    const response = await apolloClient.mutate({
-      mutation: TOKEN_AUTH_MUTATION,
-      variables: { email, password }
+  login = ({ tokenCreate }: TokenAuth) => {
+    this.setState({
+      errors: null,
+      loading: false,
+      token: tokenCreate.token,
+      user: tokenCreate.user
     });
-
-    const data = response.data.tokenCreate;
-    if (data.errors) {
-      this.setState({
-        errors: data.errors,
-        loading: false,
-        user: null
-      });
-    } else {
-      this.setState({
-        errors: null,
-        loading: false,
-        token: data.token,
-        user: data.user
-      });
-      this.props.onUserLogin();
-    }
+    this.props.onUserLogin();
   };
 
   logout = () => {
@@ -75,7 +60,7 @@ export default class UserProvider extends React.Component<
     const { apolloClient } = this.props;
     this.setState({ loading: true });
     const response = await apolloClient.mutate({
-      mutation: TOKEN_VERIFICATION_MUTATION,
+      mutation: tokenVeryficationMutation,
       variables: { token }
     });
     const data = response.data.tokenVerify;
